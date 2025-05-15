@@ -1,0 +1,195 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        Random random = new Random();
+        Avto[] cars = new Avto[2]; //массив из двух машин
+
+        // заполняем массив
+        for (int i = 0; i < 2; i++)
+        {
+            cars[i] = new Avto();
+            cars[i].info(); //инфа о машине
+        }
+        // выводим
+        for (int i = 0; i < 2; i++)
+        {
+            cars[i].Out();
+        }
+
+        bool continueTrips = true;
+        while (continueTrips)
+        {
+            int index = random.Next(0, cars.Length); // 3, 0 до 2
+            Console.WriteLine($"Выбрана машина {cars[index].marka} с номером {cars[index].nomer_avto}");
+
+            // устанавливаем случайные координаты
+            float startX = (float)(random.NextDouble() * 100);
+            float startY = (float)(random.NextDouble() * 100);
+            cars[index].setCoordinates(startX, startY); //устанавливаем
+            cars[index].getCoordinates(); //выводим
+
+            Console.WriteLine("Желаете поменять скорость машины? (да/нет)");
+            string answer = Console.ReadLine().ToLower();
+
+            if (answer == "да")
+            {
+                Console.WriteLine("Выберите действие: 1 - разгон, 2 - торможение");
+                string choice = Console.ReadLine();
+
+                if (choice == "1")
+                {
+                    Console.WriteLine("Введите насколько вы хотите увеличить скорость (км/ч): ");
+                    float speedChange;
+                    while (true)
+                    {
+                        string input = Console.ReadLine();
+                        bool success = float.TryParse(input, out speedChange);
+                        if (!success)
+                        {
+                            Console.WriteLine("Ошибка! Введите число.");
+                            continue;
+                        }
+                        if (speedChange < 0)
+                        {
+                            Console.WriteLine("Скорость не может быть отрицательной!");
+                            continue;
+                        }
+                        break;
+                    }
+                    cars[index].razgon(speedChange); //увеличиваем скорость
+                    cars[index].Out(); //выводим
+                }
+                else if (choice == "2")
+                {
+                    Console.WriteLine("Введите насколько вы хотите уменьшить скорость (км/ч): ");
+                    float speedChange;
+                    while (true)
+                    {
+                        string input = Console.ReadLine();
+                        bool success = float.TryParse(input, out speedChange);
+                        if (!success)
+                        {
+                            Console.WriteLine("Ошибка! Введите число.");
+                            continue;
+                        }
+                        if (speedChange < 0)
+                        {
+                            Console.WriteLine("Скорость не может быть отрицательной!");
+                            continue;
+                        }
+                        break;
+                    }
+                    cars[index].tormozhenie(speedChange); //уменьшаем скорость
+                    cars[index].Out(); //выводим
+                }
+            }
+
+            // жобавляем возможность перемещения по горизонтали или вертикали
+            Console.WriteLine("Желаете переместить машину по горизонтали или вертикали? (да/нет)");
+            string moveAnswer = Console.ReadLine().ToLower();
+            if (moveAnswer == "да")
+            {
+                Console.WriteLine("Выберите направление: 1 - по горизонтали, 2 - по вертикали");
+                string directionChoice = Console.ReadLine();
+
+                if (directionChoice == "1")
+                {
+                    Console.WriteLine("Введите расстояние для перемещения по горизонтали (км): ");
+                    float dx;
+                    while (true)
+                    {
+                        string input = Console.ReadLine();
+                        bool success = float.TryParse(input, out dx);
+                        if (!success)
+                        {
+                            Console.WriteLine("Ошибка! Введите число.");
+                            continue;
+                        }
+                        break;
+                    }
+                    bool moveSuccess = cars[index].moveHorizontal(dx); //выполняем перемещение
+                    if (moveSuccess)
+                    {
+                        cars[index].getCoordinates(); //показываем новые координаты
+                    }
+                }
+                else if (directionChoice == "2")
+                {
+                    Console.WriteLine("Введите расстояние для перемещения по вертикали (км): ");
+                    float dy;
+                    while (true)
+                    {
+                        string input = Console.ReadLine();
+                        bool success = float.TryParse(input, out dy);
+                        if (!success)
+                        {
+                            Console.WriteLine("Ошибка! Введите число.");
+                            continue;
+                        }
+                        break;
+                    }
+                    bool moveSuccess = cars[index].moveVertical(dy); //выполняем перемещение
+                    if (moveSuccess)
+                    {
+                        cars[index].getCoordinates(); //показываем новые координаты
+                    }
+                }
+            }
+            //генерация случайных точек
+            float x1 = (float)(random.NextDouble() * 100);
+            float y1 = (float)(random.NextDouble() * 100);
+            float x2 = (float)(random.NextDouble() * 100);
+            float y2 = (float)(random.NextDouble() * 100);
+            Console.WriteLine($"Попытка проехать от точки ({x1}, {y1}) до точки ({x2}, {y2})");
+            bool tripSuccessful = cars[index].move(x1, y1, x2, y2); //пытаемся проехать
+
+            int chance = random.Next(100);
+            if (chance < 30) // шанс авараии 30%
+            {
+                cars[index].avaria(); //вызов аварии
+                Console.WriteLine("Игра завершена из-за аварии!");
+                continueTrips = false;
+                break;
+            }
+
+            if (!tripSuccessful)
+            {
+                Console.WriteLine("Хотите заправить машину? (да/нет)");
+                string response = Console.ReadLine().ToLower();
+                if (response == "да")
+                {
+                    float top;
+                    while (true)
+                    {
+                        Console.WriteLine("Введите количество топлива для заправки:");
+                        string input = Console.ReadLine();
+                        bool success = float.TryParse(input, out top);
+                        if (!success)
+                        {
+                            Console.WriteLine("Ошибка! Введите число.");
+                            continue;
+                        }
+                        if (top < 0)
+                        {
+                            Console.WriteLine("Количество топлива не может быть отрицательным!");
+                            continue;
+                        }
+                        break;
+                    }
+                    cars[index].zapravka(top); //заправляем
+                }
+            }
+
+            cars[index].Out(); //выводим машины после всех действий
+            Console.WriteLine("Продолжить поездки? (да/нет)");
+            string continueResponse = Console.ReadLine().ToLower();
+            if (continueResponse == "нет")
+            {
+                continueTrips = false;
+            }
+        }
+    }
+}

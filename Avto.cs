@@ -1,0 +1,280 @@
+﻿// класс Avto описывает модель автомобиля с характеристиками и методами для управления
+class Avto
+{
+    public string nomer_avto; // номер машины
+    private int kolichestvo_benzina_v_bake; // количество бензина в баке 
+    private float rashod_topliva_na_100_km; // расход топлива 
+    private float currentSpeed = 0; // текущая скорость 
+    private float totalDistance = 0; // Общий пробег 
+    public string marka; // марки машин
+    private bool inCrashed = false; // попала ли машина в аварию
+    private float currentX = 0;
+    private float currentY = 0;
+
+    // метод для данных о машине
+    public void info()
+    {
+        Console.WriteLine("Введите номер машины:");
+        nomer_avto = Console.ReadLine();
+
+        Console.WriteLine("Впишите марку машины");
+        marka = Console.ReadLine();
+
+        bool isValidInput = false;
+
+        // количества бензина
+        while (!isValidInput)
+        {
+            Console.WriteLine("Введите количество бензина в баке (целое число):");
+            string input = Console.ReadLine();
+            bool success = int.TryParse(input, out kolichestvo_benzina_v_bake);
+            if (success)
+            {
+                if (kolichestvo_benzina_v_bake >= 0)
+                {
+                    isValidInput = true;
+                }
+                else
+                {
+                    Console.WriteLine("Ошибка! Количество бензина не может быть отрицательным.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Ошибка! Введите целое число.");
+            }
+        }
+        isValidInput = false;
+
+        // расход топлива 
+        while (!isValidInput)
+        {
+            Console.WriteLine("Введите расход топлива на 100 км:");
+            string input = Console.ReadLine();
+            bool success = float.TryParse(input, out rashod_topliva_na_100_km);
+            if (success)
+            {
+                if (rashod_topliva_na_100_km >= 0)
+                {
+                    isValidInput = true;
+                }
+                else
+                {
+                    Console.WriteLine("Ошибка! Расход топлива не может быть отрицательным.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Ошибка! Введите число.");
+            }
+        }
+    }
+
+    // вывод текущего состояния машины
+    public void Out()
+    {
+        Console.WriteLine($"Номер машины: {nomer_avto}\n" +
+                          $"Марка машины: {marka}\n" +
+                          $"Количество бензина: {kolichestvo_benzina_v_bake}\n" +
+                          $"Расход топлива на 100 км: {rashod_topliva_na_100_km}\n" +
+                          $"Текущая скорость: {currentSpeed} км/ч.\n" +
+                          $"Общий пробег: {totalDistance} км.");
+    }
+
+    // метод для заправки
+    public void zapravka(float top)
+    {
+        if (top <= 0)
+        {
+            Console.WriteLine("Нельзя добавить отрицательное количество топлива!");
+        }
+        else
+        {
+            int topInt = Convert.ToInt32(top);
+            kolichestvo_benzina_v_bake += topInt;
+            Console.WriteLine($"Машина заправлена на {topInt} литров. Теперь в баке {kolichestvo_benzina_v_bake} литров.");
+        }
+    }
+
+    // метод для получения остатка топлива
+    private int ostatok()
+    {
+        return kolichestvo_benzina_v_bake;
+    }
+
+    // метод для установки координат
+    public void setCoordinates(float x, float y)
+    {
+        currentX = x;
+        currentY = y;
+        Console.WriteLine($"Установлены координаты X: {currentX}, Y: {currentY}");
+    }
+
+    // получаем координаты
+    public void getCoordinates()
+    {
+        Console.WriteLine($"Текущие координаты X: {currentX}, Y: {currentY}");
+    }
+
+    // перемещение по горизонтали
+    public bool moveHorizontal(float dx)
+    {
+        // проверяем не находится ли машина в аварии
+        if (inCrashed)
+        {
+            Console.WriteLine("Машина в аварии! Перемещение невозможно.");
+            return false;
+        }
+
+        if (currentSpeed == 0)
+        {
+            Console.WriteLine("Скорость равна 0, разгонитесь перед перемещением!");
+            return false;
+        }
+
+        float distance = Math.Abs(dx); // расстояние для расчёта топлива и пробега
+        float toplivoNeedX = (distance / 100) * rashod_topliva_na_100_km;
+        int toplivoNeedXInt = Convert.ToInt32(Math.Ceiling(toplivoNeedX));
+        int currentToplivoX = ostatok();
+
+        // проверяем, достаточно ли топлива
+        if (currentToplivoX >= toplivoNeedXInt)
+        {
+            currentX += dx; // обновляем координату
+            kolichestvo_benzina_v_bake -= toplivoNeedXInt; // уменьшаем топливо
+            totalDistance += distance; // увеличиваем пробег
+            Console.WriteLine($"Перемещение по горизонтали на {distance} км успешно выполнено, ваши координаты X: {currentX}, Y: {currentY}");
+            return true;
+        }
+        else
+        {
+            Console.WriteLine($"Недостаточно бензина для перемещения на {distance} км! Нужно {toplivoNeedXInt} литров, а в баке {currentToplivoX} литров.");
+            return false;
+        }
+    }
+
+    // перемещение по вертикали
+    public bool moveVertical(float dy)
+    {
+        // проверяем не находится ли машина в аварии
+        if (inCrashed)
+        {
+            Console.WriteLine("Машина в аварии! Перемещение невозможно.");
+            return false;
+        }
+
+        if (currentSpeed == 0)
+        {
+            Console.WriteLine("Скорость равна 0, разгонитесь перед перемещением!");
+            return false;
+        }
+
+        float distance = Math.Abs(dy); // расстояние для расчёта топлива и пробега
+        float toplivoNeedY = (distance / 100) * rashod_topliva_na_100_km;
+        int toplivoNeedYInt = Convert.ToInt32(Math.Ceiling(toplivoNeedY));
+        int currentToplivoY = ostatok();
+
+        // проверяем, достаточно ли топлива
+        if (currentToplivoY >= toplivoNeedYInt)
+        {
+            currentY += dy; // обновляем координату
+            kolichestvo_benzina_v_bake -= toplivoNeedYInt; // уменьшаем топливо
+            totalDistance += distance; // увеличиваем пробег
+            Console.WriteLine($"Перемещение по вертикали на {distance} км успешно выполнено, ваши координаты X: {currentX}, Y: {currentY}");
+            return true;
+        }
+        else
+        {
+            Console.WriteLine($"Недостаточно бензина для перемещения на {distance} км! Нужно {toplivoNeedYInt} литров, а в баке {currentToplivoY} литров.");
+            return false;
+        }
+    }
+
+    // метод для поездки от точки до точки
+    public bool move(float x1, float y1, float x2, float y2)
+    {
+        // вычисляем расстояние между точками
+        float km = ezda(x1, y1, x2, y2);
+        if (currentSpeed == 0)
+        {
+            Console.WriteLine("Скорость равна 0! Разгонитесь перед поездкой.");
+            return false;
+        }
+
+        // проверяем не находится ли машина в аварии
+        if (inCrashed)
+        {
+            Console.WriteLine("Машина в аварии! Поездка дальше невозможна");
+            return false;
+        }
+
+        // вычисляем сколько топлива нужно для поездки
+        float toplivoNeed = (km / 100) * rashod_topliva_na_100_km;
+        int toplivoNeedInt = Convert.ToInt32(Math.Ceiling(toplivoNeed)); // округляем 
+        int currentToplivo = ostatok();
+
+        // проверяем, достаточно ли топлива
+        if (currentToplivo >= toplivoNeedInt)
+        {
+            kolichestvo_benzina_v_bake -= toplivoNeedInt; // уменьшаем топливо
+            totalDistance += km; // увеличиваем пробег
+            Console.WriteLine($"Поездка на {km} км выполнена успешно!");
+            return true;
+        }
+        else
+        {
+            Console.WriteLine($"Недостаточно бензина для поездки на {km} км! Нужно {toplivoNeedInt} литров, а в баке {currentToplivo} литров.");
+            return false;
+        }
+    }
+
+    // метод для вычисления расстояния между двумя точками
+    private float ezda(float x1, float y1, float x2, float y2)
+    {
+        // используем формулу для поиска расстояния: корень((x2-x1)^2 + (y2-y1)^2)
+        float result = (float)Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
+        return result;
+    }
+
+    // метод для разгона 
+    public void razgon(float speedIncrease)
+    {
+        // проверяем что увеличение скорости не отрицательное
+        if (speedIncrease < 0)
+        {
+            Console.WriteLine("Нельзя увеличить скорость на отрицательное значение");
+        }
+        else
+        {
+            currentSpeed = speedIncrease + currentSpeed; // увеличиваем скорость
+            Console.WriteLine($"Скорость увеличена на {speedIncrease} км/ч. Текущая скорость: {currentSpeed} км/ч.");
+        }
+    }
+
+    // метод для торможения 
+    public void tormozhenie(float speedDecrease)
+    {
+        // проверяем что уменьшение скорости не отрицательное
+        if (speedDecrease < 0)
+        {
+            Console.WriteLine("Нельзя уменьшить скорость на отрицательное значение!");
+        }
+        else
+        {
+            currentSpeed = currentSpeed - speedDecrease; // уменьшаем скорость
+            if (currentSpeed < 0)
+            {
+                currentSpeed = 0;
+            }
+            Console.WriteLine($"Скорость уменьшена на {speedDecrease} км/ч. Текущая скорость: {currentSpeed} км/ч.");
+        }
+    }
+
+    // метод для аварии
+    public void avaria()
+    {
+        inCrashed = true;
+        currentSpeed = 0;
+        Console.WriteLine("Вы попали в аварию! Поездка дальше невозможна");
+    }
+}
