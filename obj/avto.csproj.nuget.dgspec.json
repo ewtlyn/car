@@ -38,9 +38,9 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "dependencies": {
-            "Pastel": {
+            "Spectre": {
               "target": "Package",
-              "version": "[6.0.1, )"
+              "version": "[0.0.1, )"
             },
             "Spectre.Console": {
               "target": "Package",

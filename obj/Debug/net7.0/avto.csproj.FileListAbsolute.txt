@@ -15,4 +15,3 @@
 /Users/santamuerte/Documents/avto/bin/Debug/net7.0/Spectre.Console.dll
 /Users/santamuerte/Documents/avto/obj/Debug/net7.0/avto.csproj.AssemblyReference.cache
 /Users/santamuerte/Documents/avto/obj/Debug/net7.0/avto.csproj.CopyComplete
-/Users/santamuerte/Documents/avto/bin/Debug/net7.0/Pastel.dll
